@@ -1,5 +1,7 @@
 import pytest
 from maze_generator.maze import Maze
+from maze_generator.solvers.bfs import bfs
+from maze_generator.solvers.astar import astar
 
 
 class TestMazeDimensions:
@@ -100,3 +102,71 @@ class TestMazeEdgeCases:
         assert len(maze.grid) == 5
         assert len(maze.grid[0]) == 1
 
+#TEST SOLVERS
+class TestBFS:
+    """Tests for the BFS solver."""
+
+    def test_bfs_finds_path(self):
+        maze = Maze(width=10, height=10, seed=42)
+        path = bfs(maze, (0, 0), (9, 9))
+        assert path is not None
+
+    def test_bfs_path_starts_at_start(self):
+        maze = Maze(width=10, height=10, seed=42)
+        path = bfs(maze, (0, 0), (9, 9))
+        assert path[0] == (0, 0)
+
+    def test_bfs_path_ends_at_end(self):
+        maze = Maze(width=10, height=10, seed=42)
+        path = bfs(maze, (0, 0), (9, 9))
+        assert path[-1] == (9, 9)
+
+    def test_bfs_path_is_continuous(self):
+        maze = Maze(width=10, height=10, seed=42)
+        path = bfs(maze, (0, 0), (9, 9))
+        for i in range(len(path) - 1):
+            row1, col1 = path[i]
+            row2, col2 = path[i + 1]
+            assert abs(row1 - row2) + abs(col1 - col2) == 1, \
+                f"Path jump detected between {path[i]} and {path[i+1]}"
+
+    def test_bfs_finds_shortest_path(self):
+        maze = Maze(width=10, height=10, seed=42)
+        path_bfs = bfs(maze, (0, 0), (9, 9))
+        path_astar = astar(maze, (0, 0), (9, 9))
+        assert len(path_bfs) == len(path_astar)
+
+
+class TestAstar:
+    """Tests for the A* solver."""
+
+    def test_astar_finds_path(self):
+        maze = Maze(width=10, height=10, seed=42)
+        path = astar(maze, (0, 0), (9, 9))
+        assert path is not None
+
+    def test_astar_path_starts_at_start(self):
+        maze = Maze(width=10, height=10, seed=42)
+        path = astar(maze, (0, 0), (9, 9))
+        assert path[0] == (0, 0)
+
+    def test_astar_path_ends_at_end(self):
+        maze = Maze(width=10, height=10, seed=42)
+        path = astar(maze, (0, 0), (9, 9))
+        assert path[-1] == (9, 9)
+
+    def test_astar_path_is_continuous(self):
+        maze = Maze(width=10, height=10, seed=42)
+        path = astar(maze, (0, 0), (9, 9))
+        for i in range(len(path) - 1):
+            row1, col1 = path[i]
+            row2, col2 = path[i + 1]
+            assert abs(row1 - row2) + abs(col1 - col2) == 1, \
+                f"Path jump detected between {path[i]} and {path[i+1]}"
+
+    def test_astar_same_seed_same_path(self):
+        maze1 = Maze(width=10, height=10, seed=42)
+        maze2 = Maze(width=10, height=10, seed=42)
+        path1 = astar(maze1, (0, 0), (9, 9))
+        path2 = astar(maze2, (0, 0), (9, 9))
+        assert path1 == path2
