@@ -21,8 +21,7 @@ public class MazeGenerator : MonoBehaviour
     {
         GenerateMaze();
     }
-
-    private void GenerateMaze()
+    public void GenerateMaze()
     {
         grid = new MazeCell[height, width];
 
@@ -182,7 +181,7 @@ public class MazeGenerator : MonoBehaviour
         }
     }
 
-    private bool IsInBounds(int row, int col)
+    public bool IsInBounds(int row, int col)
     {
         return row >= 0 && row < height && col >= 0 && col < width;
     }
@@ -239,5 +238,25 @@ public class MazeGenerator : MonoBehaviour
         );
         border.name = "BorderWall";
         border.transform.localScale = scale;
+    }
+
+    public void RegenerateMaze()
+    {
+        // Destroy all existing cell GameObjects
+        foreach (Transform child in transform)
+            Destroy(child.gameObject);
+
+        // Regenerate
+        GenerateMaze();
+    }
+
+    public Vector3 GetCellWorldPosition(int row, int col)
+    {
+        return new Vector3(col * cellSize, 0, row * cellSize);
+    }
+
+    public MazeCell GetCell(int row, int col)
+    {
+        return grid[row, col];
     }
 }
