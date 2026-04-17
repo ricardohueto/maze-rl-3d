@@ -205,3 +205,11 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Unity
+/unity-project/Library/
+/unity-project/Temp/
+/unity-project/Builds/
+/unity-project/Logs/
+/unity-project/UserSettings/
+/unity-project/obj/
