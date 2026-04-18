@@ -1,0 +1,65 @@
+{
+    "MazeAgent": {
+        "checkpoints": [
+            {
+                "steps": 49998,
+                "file_path": "results\\maze_run_03\\MazeAgent\\MazeAgent-49998.onnx",
+                "reward": null,
+                "creation_time": 1776463293.2247646,
+                "auxillary_file_paths": [
+                    "results\\maze_run_03\\MazeAgent\\MazeAgent-49998.pt"
+                ]
+            },
+            {
+                "steps": 99982,
+                "file_path": "results\\maze_run_03\\MazeAgent\\MazeAgent-99982.onnx",
+                "reward": null,
+                "creation_time": 1776463425.6823056,
+                "auxillary_file_paths": [
+                    "results\\maze_run_03\\MazeAgent\\MazeAgent-99982.pt"
+                ]
+            },
+            {
+                "steps": 149966,
+                "file_path": "results\\maze_run_03\\MazeAgent\\MazeAgent-149966.onnx",
+                "reward": null,
+                "creation_time": 1776463563.2547014,
+                "auxillary_file_paths": [
+                    "results\\maze_run_03\\MazeAgent\\MazeAgent-149966.pt"
+                ]
+            },
+            {
+                "steps": 199950,
+                "file_path": "results\\maze_run_03\\MazeAgent\\MazeAgent-199950.onnx",
+                "reward": null,
+                "creation_time": 1776463697.1779246,
+                "auxillary_file_paths": [
+                    "results\\maze_run_03\\MazeAgent\\MazeAgent-199950.pt"
+                ]
+            },
+            {
+                "steps": 238158,
+                "file_path": "results\\maze_run_03\\MazeAgent\\MazeAgent-238158.onnx",
+                "reward": null,
+                "creation_time": 1776463788.6892328,
+                "auxillary_file_paths": [
+                    "results\\maze_run_03\\MazeAgent\\MazeAgent-238158.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 238158,
+            "file_path": "results\\maze_run_03\\MazeAgent.onnx",
+            "reward": null,
+            "creation_time": 1776463788.6892328,
+            "auxillary_file_paths": [
+                "results\\maze_run_03\\MazeAgent\\MazeAgent-238158.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.1.0",
+        "torch_version": "2.2.1+cpu"
+    }
+}

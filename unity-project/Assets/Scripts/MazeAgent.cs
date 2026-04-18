@@ -25,10 +25,15 @@ public class MazeAgent : Agent
     // To detect wall collisions
     private int lastRow;
     private int lastCol;
+    // Track visited cells to penalize revisiting
+    private HashSet<(int, int)> visitedCells = new HashSet<(int, int)>();
 
     public override void OnEpisodeBegin()
     {
         rewardSystem.ResetStepCount();
+
+        visitedCells.Clear();
+        visitedCells.Add((0, 0));
         
         // Pick a random seed from the pool
         int[] seedPool = { 42, 99, 123, 256, 512, 1024, 2048, 4096 };
@@ -101,35 +106,38 @@ public class MazeAgent : Agent
             case 3: wallBlocking = currentCell.wallWest;  break;
         }
 
+        bool isRevisit = false;
         if (!wallBlocking && mazeGenerator.IsInBounds(targetRow, targetCol))
         {
             currentRow = targetRow;
             currentCol = targetCol;
             transform.position = mazeGenerator.GetCellWorldPosition(currentRow, currentCol)
                                  + Vector3.up * 0.5f;
+
+            isRevisit = visitedCells.Contains((currentRow, currentCol));
+            visitedCells.Add((currentRow, currentCol));
         }
 
-        // Delegate reward calculation to RewardSystem
         rewardSystem.EvaluateStep(
             this, currentRow, currentCol,
             exitRow, exitCol,
-            wallBlocking
+            wallBlocking, isRevisit
         );
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
     {
         var discreteActions = actionsOut.DiscreteActions;
-        discreteActions[0] = 0; // default: no movement
+        discreteActions[0] = 0;
 
         if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
-            discreteActions[0] = 0; // North
+            discreteActions[0] = 0;
         if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
-            discreteActions[0] = 1; // South
+            discreteActions[0] = 1;
         if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
-            discreteActions[0] = 2; // East
+            discreteActions[0] = 2;
         if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
-            discreteActions[0] = 3; // West
+            discreteActions[0] = 3;
     }
 }
 

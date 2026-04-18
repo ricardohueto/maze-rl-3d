@@ -213,3 +213,6 @@ __marimo__/
 /unity-project/Logs/
 /unity-project/UserSettings/
 /unity-project/obj/
+
+# MLagents
+training/results/

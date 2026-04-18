@@ -1,0 +1,42 @@
+{
+    "name": "root",
+    "metadata": {
+        "timer_format_version": "0.1.0",
+        "start_time_seconds": "1776499130",
+        "python_version": "3.10.11 (tags/v3.10.11:7d4cc5a, Apr  5 2023, 00:38:17) [MSC v.1929 64 bit (AMD64)]",
+        "command_line_arguments": "C:\\Users\\User\\Documents\\maze-rl-3d\\venv\\Scripts\\mlagents-learn training/config/maze_trainer.yaml --run-id=maze_run_06 --force",
+        "mlagents_version": "1.1.0",
+        "mlagents_envs_version": "1.1.0",
+        "communication_protocol_version": "1.5.0",
+        "pytorch_version": "2.2.1+cpu",
+        "numpy_version": "1.23.5",
+        "end_time_seconds": "1776499136"
+    },
+    "total": 5.837009000009857,
+    "count": 1,
+    "self": 0.0036452000495046377,
+    "children": {
+        "run_training.setup": {
+            "total": 0.06622129998868331,
+            "count": 1,
+            "self": 0.06622129998868331
+        },
+        "TrainerController.start_learning": {
+            "total": 5.767142499971669,
+            "count": 1,
+            "self": 6.449996726587415e-05,
+            "children": {
+                "TrainerController._reset_env": {
+                    "total": 5.767066600034013,
+                    "count": 1,
+                    "self": 5.767066600034013
+                },
+                "TrainerController._save_models": {
+                    "total": 1.1399970389902592e-05,
+                    "count": 1,
+                    "self": 1.1399970389902592e-05
+                }
+            }
+        }
+    }
+}
