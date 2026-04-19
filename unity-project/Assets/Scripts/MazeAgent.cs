@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.MLAgents;
@@ -14,63 +13,89 @@ public class MazeAgent : Agent
     [Header("Agent Settings")]
     public float moveSpeed = 5f;
 
-    // Current position in grid coordinates
+    // Grid position
     private int currentRow;
     private int currentCol;
-
-    // Exit position
     private int exitRow;
     private int exitCol;
-
-    // To detect wall collisions
     private int lastRow;
     private int lastCol;
-    // Track visited cells to penalize revisiting
+
+    // Visited cells
     private HashSet<(int, int)> visitedCells = new HashSet<(int, int)>();
+
+    // Curriculum
+    private int   episodeCount    = 0;
+    private int   successCount    = 0;
+    private int   windowSize      = 100;
+    private int   currentMazeSize = 3;
+    private float advanceThreshold   = 0.7f;
+    private float downgradeThreshold = 0.3f;
+
+    public void NotifySuccess()
+    {
+        successCount++;
+    }
 
     public override void OnEpisodeBegin()
     {
-        rewardSystem.ResetStepCount();
+        episodeCount++;
 
-        visitedCells.Clear();
-        visitedCells.Add((0, 0));
-        
-        // Pick a random seed from the pool
-        int[] seedPool = { 42, 99, 123, 256, 512, 1024, 2048, 4096 };
-        int randomSeed = seedPool[Random.Range(0, seedPool.Length)];
-        mazeGenerator.seed = randomSeed;
+        // Evaluate curriculum every windowSize episodes
+        if (episodeCount % windowSize == 0)
+        {
+            float successRate = (float)successCount / windowSize;
+            successCount = 0;
 
-        // Regenerate the maze
+            Debug.Log($"[Curriculum] Size: {currentMazeSize}x{currentMazeSize} | Success rate: {successRate:P0}");
+
+            if (successRate >= advanceThreshold && currentMazeSize < 10)
+            {
+                currentMazeSize = Mathf.Min(currentMazeSize + 2, 10);
+                Debug.Log($"[Curriculum] Advancing to {currentMazeSize}x{currentMazeSize}");
+            }
+            else if (successRate < downgradeThreshold && currentMazeSize > 3)
+            {
+                currentMazeSize = Mathf.Max(currentMazeSize - 2, 3);
+                Debug.Log($"[Curriculum] Downgrading to {currentMazeSize}x{currentMazeSize}");
+            }
+        }
+
+        // Configure maze
+        mazeGenerator.width  = currentMazeSize;
+        mazeGenerator.height = currentMazeSize;
+        mazeGenerator.seed   = Random.Range(0, 100000);
         mazeGenerator.RegenerateMaze();
 
-        // Place agent at top-left corner
+        // Reset agent
         currentRow = 0;
         currentCol = 0;
         lastRow    = 0;
         lastCol    = 0;
+        visitedCells.Clear();
+        visitedCells.Add((0, 0));
 
-        // Exit is always at bottom-right corner
         exitRow = mazeGenerator.height - 1;
         exitCol = mazeGenerator.width  - 1;
 
-        // Move agent GameObject to starting position
         transform.position = mazeGenerator.GetCellWorldPosition(0, 0)
                              + Vector3.up * 0.5f;
+
+        // Pass maze size to reward system
+        rewardSystem.ResetStepCount(currentMazeSize);
     }
+
     public override void CollectObservations(VectorSensor sensor)
     {
-        // Normalized position in the grid
         sensor.AddObservation((float)currentRow / mazeGenerator.height);
         sensor.AddObservation((float)currentCol / mazeGenerator.width);
 
-        // Walls around current cell
         MazeCell cell = mazeGenerator.GetCell(currentRow, currentCol);
         sensor.AddObservation(cell.wallNorth ? 1f : 0f);
         sensor.AddObservation(cell.wallSouth ? 1f : 0f);
         sensor.AddObservation(cell.wallEast  ? 1f : 0f);
         sensor.AddObservation(cell.wallWest  ? 1f : 0f);
 
-        // Normalized distance to exit
         float distRow = (float)(exitRow - currentRow) / mazeGenerator.height;
         float distCol = (float)(exitCol - currentCol) / mazeGenerator.width;
         sensor.AddObservation(distRow);
@@ -140,4 +165,3 @@ public class MazeAgent : Agent
             discreteActions[0] = 3;
     }
 }
-

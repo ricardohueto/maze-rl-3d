@@ -16,6 +16,9 @@ public class MazeGenerator : MonoBehaviour
     public float cellSize = 2f;
 
     private MazeCell[,] grid;
+    
+    [Header("Materials")]
+    public Material exitMaterial;
 
     void Start()
     {
@@ -33,6 +36,14 @@ public class MazeGenerator : MonoBehaviour
         int startRow = rng.Next(0, height);
         int startCol = rng.Next(0, width);
         VisitCell(startRow, startCol, rng);
+
+        if (exitMaterial != null)
+        {
+            int exitRow = height - 1;
+            int exitCol = width  - 1;
+            GameObject floor = grid[exitRow, exitCol].floorObj;
+            floor.GetComponent<Renderer>().material = exitMaterial;
+        }
 
         UpdateWallVisibility();
         CreateBorder();

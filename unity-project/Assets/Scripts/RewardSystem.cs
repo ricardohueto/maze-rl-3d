@@ -4,23 +4,19 @@ using Unity.MLAgents;
 public class RewardSystem : MonoBehaviour
 {
     [Header("Reward Values")]
-    public float rewardGoal        =  1.0f;
-    public float penaltyStep       = -0.001f;
-    public float penaltyWall       = -0.06f;
-    public float penaltyTimeout    = -0.5f;
-    public float penaltyRevisit    = -0.06f;
-    public float rewardProgress    =  0.05f;
+    public float rewardGoal     =  1.0f;
+    public float penaltyStep    = -0.005f;
+    public float penaltyTimeout = -1.0f;
 
-    [Header("Settings")]
-    public int maxSteps = 500;
+    private int stepCount = 0;
+    private int maxSteps  = 200;
 
-    private int   stepCount        = 0;
-    private float previousDistance = -1f;
-
-    public void ResetStepCount()
+    public void ResetStepCount(int mazeSize)
     {
-        stepCount        = 0;
-        previousDistance = -1f;
+        stepCount = 0;
+        // Scale max steps with maze size
+        // 3x3 → 50 steps, 5x5 → 100 steps, 10x10 → 300 steps
+        maxSteps = mazeSize * mazeSize * 3;
     }
 
     public void EvaluateStep(
@@ -31,15 +27,10 @@ public class RewardSystem : MonoBehaviour
     {
         stepCount++;
 
-        if (hitWall)
-        {
-            agent.AddReward(penaltyWall);
-            return;
-        }
-
         if (currentRow == exitRow && currentCol == exitCol)
         {
             agent.AddReward(rewardGoal);
+            agent.NotifySuccess();
             agent.EndEpisode();
             return;
         }
@@ -50,19 +41,6 @@ public class RewardSystem : MonoBehaviour
             agent.EndEpisode();
             return;
         }
-
-        // Progress signal
-        float currentDistance = Mathf.Abs(currentRow - exitRow)
-                              + Mathf.Abs(currentCol - exitCol);
-
-        if (previousDistance >= 0f && currentDistance < previousDistance)
-            agent.AddReward(rewardProgress);
-
-        previousDistance = currentDistance;
-
-        // Revisit penalty
-        if (isRevisit)
-            agent.AddReward(penaltyRevisit);
 
         agent.AddReward(penaltyStep);
     }
