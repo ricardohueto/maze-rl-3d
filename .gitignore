@@ -225,3 +225,7 @@ unity-project/Assets/ML-Agents/
 
 # Unity project settings that no deben trackearse
 unity-project/ProjectSettings/TimeManager.asset
+
+# Unity auto-generated
+unity-project/Assembly-CSharp.csproj
+unity-project/ProjectSettings/TimeManager.asset
