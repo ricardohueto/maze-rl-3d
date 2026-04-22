@@ -216,3 +216,12 @@ __marimo__/
 
 # MLagents
 training/results/
+
+# Training results (root level — ML-Agents output)
+/results/
+
+# Unity timers and auto-generated files
+unity-project/Assets/ML-Agents/
+
+# Unity project settings that no deben trackearse
+unity-project/ProjectSettings/TimeManager.asset
