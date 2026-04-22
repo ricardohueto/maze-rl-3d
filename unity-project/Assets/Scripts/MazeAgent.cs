@@ -13,7 +13,6 @@ public class MazeAgent : Agent
     [Header("Agent Settings")]
     public float moveSpeed = 5f;
 
-    // Grid position
     private int currentRow;
     private int currentCol;
     private int exitRow;
@@ -21,53 +20,17 @@ public class MazeAgent : Agent
     private int lastRow;
     private int lastCol;
 
-    // Visited cells
     private HashSet<(int, int)> visitedCells = new HashSet<(int, int)>();
-
-    // Curriculum
-    private int   episodeCount    = 0;
-    private int   successCount    = 0;
-    private int   windowSize      = 100;
-    private int   currentMazeSize = 3;
-    private float advanceThreshold   = 0.7f;
-    private float downgradeThreshold = 0.3f;
-
-    public void NotifySuccess()
-    {
-        successCount++;
-    }
 
     public override void OnEpisodeBegin()
     {
-        episodeCount++;
+        int mazeSize = CurriculumManager.Instance.CurrentMazeSize;
 
-        // Evaluate curriculum every windowSize episodes
-        if (episodeCount % windowSize == 0)
-        {
-            float successRate = (float)successCount / windowSize;
-            successCount = 0;
-
-            Debug.Log($"[Curriculum] Size: {currentMazeSize}x{currentMazeSize} | Success rate: {successRate:P0}");
-
-            if (successRate >= advanceThreshold && currentMazeSize < 10)
-            {
-                currentMazeSize = Mathf.Min(currentMazeSize + 2, 10);
-                Debug.Log($"[Curriculum] Advancing to {currentMazeSize}x{currentMazeSize}");
-            }
-            else if (successRate < downgradeThreshold && currentMazeSize > 3)
-            {
-                currentMazeSize = Mathf.Max(currentMazeSize - 2, 3);
-                Debug.Log($"[Curriculum] Downgrading to {currentMazeSize}x{currentMazeSize}");
-            }
-        }
-
-        // Configure maze
-        mazeGenerator.width  = currentMazeSize;
-        mazeGenerator.height = currentMazeSize;
+        mazeGenerator.width  = mazeSize;
+        mazeGenerator.height = mazeSize;
         mazeGenerator.seed   = Random.Range(0, 100000);
         mazeGenerator.RegenerateMaze();
 
-        // Reset agent
         currentRow = 0;
         currentCol = 0;
         lastRow    = 0;
@@ -79,10 +42,9 @@ public class MazeAgent : Agent
         exitCol = mazeGenerator.width  - 1;
 
         transform.position = mazeGenerator.GetCellWorldPosition(0, 0)
-                             + Vector3.up * 0.5f;
+                     + Vector3.up * 0.5f;
 
-        // Pass maze size to reward system
-        rewardSystem.ResetStepCount(currentMazeSize);
+        rewardSystem.ResetStepCount(mazeSize);
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -114,10 +76,10 @@ public class MazeAgent : Agent
 
         switch (action)
         {
-            case 0: targetRow++; break; // North
-            case 1: targetRow--; break; // South
-            case 2: targetCol++; break; // East
-            case 3: targetCol--; break; // West
+            case 0: targetRow++; break;
+            case 1: targetRow--; break;
+            case 2: targetCol++; break;
+            case 3: targetCol--; break;
         }
 
         MazeCell currentCell = mazeGenerator.GetCell(currentRow, currentCol);

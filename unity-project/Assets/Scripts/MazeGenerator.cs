@@ -20,6 +20,9 @@ public class MazeGenerator : MonoBehaviour
     [Header("Materials")]
     public Material exitMaterial;
 
+    [Header("Parallel Training")]
+    public Vector3 areaOffset = Vector3.zero;
+
     void Start()
     {
         GenerateMaze();
@@ -51,9 +54,9 @@ public class MazeGenerator : MonoBehaviour
 
     private MazeCell CreateCell(int row, int col)
     {
-        float x = col * cellSize;
-        float z = row * cellSize;
-        Vector3 cellPosition = new Vector3(x, 0, z);
+        float x = col * cellSize + areaOffset.x;
+        float z = row * cellSize + areaOffset.z;
+        Vector3 cellPosition = new Vector3(x, areaOffset.y, z);
 
         GameObject cellObj = new GameObject($"Cell_{row}_{col}");
         cellObj.transform.position = cellPosition;
@@ -213,10 +216,10 @@ public class MazeGenerator : MonoBehaviour
         float wallH     = 1f;
         float thickness = 0.2f;
 
-        float minX = -cellSize / 2f;
-        float maxX = (width  - 1) * cellSize + cellSize / 2f;
-        float minZ = -cellSize / 2f;
-        float maxZ = (height - 1) * cellSize + cellSize / 2f;
+        float minX = -cellSize / 2f + areaOffset.x;
+        float maxX = (width  - 1) * cellSize + cellSize / 2f + areaOffset.x;
+        float minZ = -cellSize / 2f + areaOffset.z;
+        float maxZ = (height - 1) * cellSize + cellSize / 2f + areaOffset.z;
 
         float centerX    = (minX + maxX) / 2f;
         float centerZ    = (minZ + maxZ) / 2f;
@@ -263,7 +266,11 @@ public class MazeGenerator : MonoBehaviour
 
     public Vector3 GetCellWorldPosition(int row, int col)
     {
-        return new Vector3(col * cellSize, 0, row * cellSize);
+        return new Vector3(
+            col * cellSize + areaOffset.x,
+            areaOffset.y,
+            row * cellSize + areaOffset.z
+        );
     }
 
     public MazeCell GetCell(int row, int col)

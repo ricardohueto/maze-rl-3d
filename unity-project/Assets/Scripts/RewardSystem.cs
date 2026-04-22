@@ -5,7 +5,7 @@ public class RewardSystem : MonoBehaviour
 {
     [Header("Reward Values")]
     public float rewardGoal     =  1.0f;
-    public float penaltyStep    = -0.005f;
+    public float penaltyStep    = -0.01f;
     public float penaltyTimeout = -1.0f;
 
     private int stepCount = 0;
@@ -14,9 +14,7 @@ public class RewardSystem : MonoBehaviour
     public void ResetStepCount(int mazeSize)
     {
         stepCount = 0;
-        // Scale max steps with maze size
-        // 3x3 → 50 steps, 5x5 → 100 steps, 10x10 → 300 steps
-        maxSteps = mazeSize * mazeSize * 3;
+        maxSteps = mazeSize * mazeSize * 5;
     }
 
     public void EvaluateStep(
@@ -29,8 +27,12 @@ public class RewardSystem : MonoBehaviour
 
         if (currentRow == exitRow && currentCol == exitCol)
         {
-            agent.AddReward(rewardGoal);
-            agent.NotifySuccess();
+            float stepsUsed = (float)stepCount / maxSteps;
+            float efficiencyBonus = (1.0f - stepsUsed) * 1.0f;  // hasta +1.0 extra
+            
+            agent.AddReward(rewardGoal + efficiencyBonus);
+            
+            CurriculumManager.Instance.NotifyEpisodeEnd(true);
             agent.EndEpisode();
             return;
         }
@@ -38,6 +40,7 @@ public class RewardSystem : MonoBehaviour
         if (stepCount >= maxSteps)
         {
             agent.AddReward(penaltyTimeout);
+            CurriculumManager.Instance.NotifyEpisodeEnd(false);
             agent.EndEpisode();
             return;
         }
