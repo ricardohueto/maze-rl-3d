@@ -229,3 +229,7 @@ unity-project/ProjectSettings/TimeManager.asset
 # Unity auto-generated
 unity-project/Assembly-CSharp.csproj
 unity-project/ProjectSettings/TimeManager.asset
+
+unity-project/Assembly-CSharp.csproj
+unity-project/*.sln
+unity-project/ProjectSettings/TimeManager.asset
